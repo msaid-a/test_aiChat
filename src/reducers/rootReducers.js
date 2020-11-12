@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux'
-
+import movieData from './movieReducers'
+import asyncData from './asyncReducers'
 
 export default combineReducers({
-    dashboard: "dashboardReducer"
+    movie: movieData,
+    loading: asyncData
   });
