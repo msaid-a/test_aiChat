@@ -1,13 +1,16 @@
-import { SET_LOADING } from "../action/type";
+import { SET_LOADING, SET_LOADING_MODAL } from "../action/type";
 
 const initialState = {
-  loding: false,
+  loading: false,
+  loadingModal: false,
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
     case SET_LOADING:
-      return { ...state, data: action.payload };
+      return { ...state, loading: action.payload };
+    case SET_LOADING_MODAL:
+      return { ...state, loadingModal: action.payload };
     default:
       return state;
   }

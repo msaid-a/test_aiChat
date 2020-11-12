@@ -1,9 +1,16 @@
 import axios from 'axios'
-import {GET_MOVIE, GET_MOVIE_DETAIL, SET_LOADING} from './type'
+import {GET_MOVIE, GET_MOVIE_DETAIL, SET_LOADING, SET_LOADING_MODAL} from './type'
 
 export const setLoading = (bool) => dispatch =>{
     dispatch({
         type: SET_LOADING,
+        payload: bool
+    })
+}
+
+export const setLoadingModal = (bool) => dispatch =>{
+    dispatch({
+        type: SET_LOADING_MODAL,
         payload: bool
     })
 }
@@ -38,7 +45,7 @@ export const updateData = (data) => async dispatch => {
 
 export const detailMovie = (id) => async dispatch => {
     try {
-        dispatch(setLoading(true))
+        dispatch(setLoadingModal(true))
         const res = await axios.get(`http://www.omdbapi.com/?i=${id}&apikey=c4564e0b`)
         if(res.data) {
             dispatch({
@@ -46,8 +53,8 @@ export const detailMovie = (id) => async dispatch => {
                 payload: res.data
             })
         }
-        dispatch(setLoading(false))
+        dispatch(setLoadingModal(false))
     } catch (error) {
-        dispatch(setLoading(false))
+        dispatch(setLoadingModal(false))
     }
 }

@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { Row, Col, Table, Input, Button, Form, Container, } from 'reactstrap';
+import { Row, Col, Table, Container,Modal, Spinner } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStar } from '@fortawesome/free-solid-svg-icons'
-import {getMovie, updateData} from '../action/movieAction'
+import {getMovie, updateData, detailMovie} from '../action/movieAction'
 import {connect} from 'react-redux'
 import Nav from './Nav'
 import _ from 'lodash'
@@ -11,7 +11,8 @@ class FavoriteMovie extends Component {
 
     state ={ 
         valueSearch : '',
-        data: []
+        data: [],
+        modal: false
     }
 
     componentWillReceiveProps= () => {
@@ -47,12 +48,25 @@ class FavoriteMovie extends Component {
         updateData(MovieData)
     }
 
+    setModal = (id) => {
+        this.setState({
+            modal: true
+        })
+        this.props.detailMovie(id)
+
+    }
+
+    closeModal = () => {
+        this.setState({modal: false})
+    }
+
+
     renderData = () => {
         const {data} = this.state
             return this.props.MovieData.Search && this.props.MovieData.Search.map(val => {
                 if(val.is_favorite) {
                     return <tr>
-                        <td>{val.Title}</td>
+                        <td><span className="text-primary" style={{cursor: 'pointer'}} onClick={()=> this.setModal(val.imdbID)}>{val.Title}</span></td>
                         <td>{val.Year}</td>
                         <td>{val.imdbID}</td>
                         <td><FontAwesomeIcon onClick={() => this.setFavorite(val.imdbID)} icon={faStar} style={val.is_favorite ?  {color: 'red', cursor: 'pointer'} : {cursor: 'pointer'}} /></td>
@@ -62,7 +76,7 @@ class FavoriteMovie extends Component {
     }
 
     render() {
-
+        const {loadingModal, MovieDetail} = this.props
         return (
             <Container>
                 <Row >
@@ -84,6 +98,28 @@ class FavoriteMovie extends Component {
 
                     </Col>
                 </Row>
+                <Modal isOpen={this.state.modal} toggle={this.closeModal} external={true} >
+                    {loadingModal ? 
+                    <div className="p-4">
+                    <Spinner type="grow" color="primary" />
+                    <Spinner type="grow" color="secondary" />
+                    <Spinner type="grow" color="success" />
+                    <Spinner type="grow" color="danger" />
+                    <Spinner type="grow" color="warning" />
+            </div> :
+                <div className="p-4">
+                    <img src={MovieDetail.Poster} alt="" className="ml-5"/>
+                    <h5 className="mt-5">{MovieDetail.Title}</h5>
+                    <p>Year : {MovieDetail.Year}</p>
+                    <p>Released : {MovieDetail.Released}</p>
+                    <p>Director : {MovieDetail.Director}</p>
+                    <p>Actors: {MovieDetail.Actors}</p>
+                    <p>Plot : {MovieDetail.Plot}</p>
+                    <p>Award : {MovieDetail.Awards}</p>
+
+                </div>}
+
+                </Modal>
             </Container>
         )
     }
@@ -91,8 +127,11 @@ class FavoriteMovie extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        MovieData : state.movie.data
+        MovieData : state.movie.data,
+        MovieDetail : state.movie.detail,
+        loading: state.loading.loading,
+        loadingModal : state.loading.loadingModal,
     }
 }
 
-export default connect(mapStateToProps, {getMovie, updateData})(FavoriteMovie)
+export default connect(mapStateToProps, {getMovie, updateData, detailMovie})(FavoriteMovie)
